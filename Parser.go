@@ -1,26 +1,16 @@
 package godc
 
 import (
-	"bytes"
 	"io"
 	"net/http"
 
 	"golang.org/x/net/html"
-
-	"fmt"
 )
 
 type articleData struct {
 	URL   string
 	Title string
 	Name  string
-}
-
-func renderNode(n *html.Node) string {
-	var buf bytes.Buffer
-	w := io.Writer(&buf)
-	html.Render(w, n)
-	return buf.String()
 }
 
 func fetchPage(gallCode string) io.ReadCloser {
@@ -47,11 +37,11 @@ func fetchPage(gallCode string) io.ReadCloser {
 	return resp.Body
 }
 
-func fetchAndParsePage(gallID string) []articleData {
+func fetchAndParsePage(gallID string) ([]articleData, error) {
 	dcpg := fetchPage(gallID)
 	doc, err := html.Parse(dcpg)
 	if err != nil {
-		fmt.Println(err)
+		return nil, err
 	}
 	result := make([]articleData, 0)
 	var f func(*html.Node)
@@ -99,5 +89,5 @@ func fetchAndParsePage(gallID string) []articleData {
 		}
 	}
 	f(doc)
-	return result
+	return result, nil
 }
