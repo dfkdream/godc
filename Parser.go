@@ -1,3 +1,4 @@
+//디시인사이드 갤러리 게시글 목록을 읽어오는 패키지
 package godc
 
 import (
@@ -7,7 +8,8 @@ import (
 	"golang.org/x/net/html"
 )
 
-type articleData struct {
+//게시글 주소(URL), 게시글 제목(Title), 닉네임(고닉/유동 구분 안됨)(Name)
+type ArticleData struct {
 	URL   string
 	Title string
 	Name  string
@@ -37,13 +39,14 @@ func fetchPage(gallCode string) io.ReadCloser {
 	return resp.Body
 }
 
-func fetchAndParsePage(gallID string) ([]articleData, error) {
+//게시글 목록 1페이지를 읽어옵니다
+func FetchAndParsePage(gallID string) ([]ArticleData, error) {
 	dcpg := fetchPage(gallID)
 	doc, err := html.Parse(dcpg)
 	if err != nil {
 		return nil, err
 	}
-	result := make([]articleData, 0)
+	result := make([]ArticleData, 0)
 	var f func(*html.Node)
 	f = func(n *html.Node) {
 		if n.Type == html.ElementNode && n.Data == "ul" && len(n.Attr) > 0 && n.Attr[0].Val == "list_best" {
@@ -76,7 +79,7 @@ func fetchAndParsePage(gallID string) ([]articleData, error) {
 											}
 										}
 									}
-									result = append(result, articleData{articleURL, articleTitle, articleName})
+									result = append(result, ArticleData{articleURL, articleTitle, articleName})
 								}
 							}
 						}
