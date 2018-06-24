@@ -1,3 +1,4 @@
+//Package godc reads the list of posts from the DCInside Gallery
 //디시인사이드 갤러리 게시글 목록을 읽어오는 패키지
 package godc
 
@@ -8,6 +9,7 @@ import (
 	"golang.org/x/net/html"
 )
 
+//ArticleData contains post URL, post title, username
 //게시글 주소(URL), 게시글 제목(Title), 닉네임(고닉/유동 구분 안됨)(Name)
 type ArticleData struct {
 	URL   string
@@ -39,6 +41,7 @@ func fetchPage(gallCode string) io.ReadCloser {
 	return resp.Body
 }
 
+//FetchAndParsePage reads first page of post list
 //게시글 목록 1페이지를 읽어옵니다
 func FetchAndParsePage(gallID string) ([]ArticleData, error) {
 	dcpg := fetchPage(gallID)
