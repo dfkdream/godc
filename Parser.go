@@ -1,4 +1,4 @@
-//Package godc reads the list of posts from the DCInside Gallery
+//Package godc reads list of posts from the DCInside Gallery
 //디시인사이드 갤러리 게시글 목록을 읽어오는 패키지
 package godc
 
