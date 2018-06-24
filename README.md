@@ -8,4 +8,4 @@
 
 ## Document
 
-*[godoc](https://godoc.org/github.com/dfkdream/Go-DCApi)
+* [godoc](https://godoc.org/github.com/dfkdream/Go-DCApi)
