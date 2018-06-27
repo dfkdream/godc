@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"time"
 
 	"golang.org/x/net/html"
 )
@@ -21,7 +22,9 @@ type ArticleData struct {
 }
 
 func fetchPage(gallCode string, page int) io.ReadCloser {
-	client := &http.Client{}
+	client := &http.Client{
+		Timeout: time.Second * 15,
+	}
 	req, err := http.NewRequest("GET", "http://m.dcinside.com/list.php?id="+gallCode+"&page="+strconv.Itoa(page), nil)
 	if err != nil {
 		return nil
