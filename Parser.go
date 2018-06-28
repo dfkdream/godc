@@ -4,6 +4,7 @@
 package godc
 
 import (
+	"errors"
 	"io"
 	"net/http"
 	"strconv"
@@ -23,7 +24,7 @@ type ArticleData struct {
 
 func fetchPage(gallCode string, page int) io.ReadCloser {
 	client := &http.Client{
-		Timeout: time.Second * 15,
+		Timeout: time.Second * 30,
 	}
 	req, err := http.NewRequest("GET", "http://m.dcinside.com/list.php?id="+gallCode+"&page="+strconv.Itoa(page), nil)
 	if err != nil {
@@ -52,6 +53,9 @@ func fetchPage(gallCode string, page int) io.ReadCloser {
 //게시글 목록의 지정된 페이지를 읽어옵니다
 func FetchAndParsePage(gallID string, page int) ([]ArticleData, error) {
 	dcpg := fetchPage(gallID, page)
+	if dcpg == nil {
+		return nil, errors.New("Page fetching error")
+	}
 	doc, err := html.Parse(dcpg)
 	if err != nil {
 		return nil, err
