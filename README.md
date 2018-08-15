@@ -11,3 +11,32 @@
 ## Document
 
 * [godoc](https://godoc.org/github.com/dfkdream/Go-DCApi)
+
+## Example Code
+
+GalleryID 갤러리의 게시글 목록 1페이지를 읽어옵니다.
+```Go
+package main
+
+import (
+	"fmt"
+	"log"
+
+	"github.com/dfkdream/Go-DCApi"
+)
+
+func main() {
+    dat, err := godc.FetchAndParsePage("galleryID", 1)
+
+	if err != nil {
+		log.Fatal(err)
+    }
+
+	for _, doc := range dat {
+		fmt.Println("=============page1================")
+		fmt.Println(doc.URL)
+		fmt.Println(doc.Title)
+		fmt.Println(doc.Name)
+	}
+}
+```
