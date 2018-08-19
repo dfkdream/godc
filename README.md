@@ -25,7 +25,7 @@ Name | string | 작성자 이름
 Timestamp | string | 작성 시간
 ViewCounter | string | 조회수
 UpVote | string | 추천 수
-WriterID | string( `|` 로 구분) | 작성자 ID/IP
+WriterID | string( `\|` 로 구분) | 작성자 ID/IP
 
 ## Example Code
 
@@ -48,16 +48,16 @@ func main() {
     }
 
     for index, data := range dat {
-		fmt.Printf("=============article%d==============\n", index)
-        fmt.Printf("URL: %s\nTitle: %s\nReplyCount: %s\nName : %s\nTimestamp : %s\nViewCounter : %s\nUpVote : %s\nWriterID : %s\n", 
-            data.URL, 
-            data.Title, 
-            data.ReplyCount, 
-            data.Name, 
-            data.Timestamp, 
-            data.ViewCounter, 
-            data.UpVote, 
+        fmt.Printf("=============article%d==============\n", index)
+        fmt.Printf("URL: %s\nTitle: %s\nReplyCount: %s\nName : %s\nTimestamp : %s\nViewCounter : %s\nUpVote : %s\nWriterID : %s\n",
+            data.URL,
+            data.Title,
+            data.ReplyCount,
+            data.Name,
+            data.Timestamp,
+            data.ViewCounter,
+            data.UpVote,
             data.WriterID)
-	} 
+    }
 }
 ```
