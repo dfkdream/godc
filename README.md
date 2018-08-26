@@ -41,7 +41,7 @@ import (
 )
 
 func main() {
-    dat, err := godc.FetchAndParsePage("galleryID", 1)
+    dat, err := godc.FetchArticleList("galleryID", 1)
 
     if err != nil {
         log.Fatal(err)

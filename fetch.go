@@ -7,11 +7,11 @@ import (
 	"time"
 )
 
-func fetchPage(gallCode string, page int) io.ReadCloser {
+func fetchURL(URL string) io.ReadCloser {
 	client := &http.Client{
 		Timeout: time.Second * 30,
 	}
-	req, err := http.NewRequest("GET", "http://m.dcinside.com/list.php?id="+gallCode+"&page="+strconv.Itoa(page), nil)
+	req, err := http.NewRequest("GET", URL, nil)
 	if err != nil {
 		return nil
 	}
@@ -31,4 +31,8 @@ func fetchPage(gallCode string, page int) io.ReadCloser {
 	}
 
 	return resp.Body
+}
+
+func fetchRawArticleList(gallCode string, page int) io.ReadCloser {
+	return fetchURL("http://m.dcinside.com/list.php?id=" + gallCode + "&page=" + strconv.Itoa(page))
 }

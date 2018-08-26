@@ -10,11 +10,11 @@ import (
 	"golang.org/x/net/html"
 )
 
-//FetchAndParsePage reads specific page of post list.
+//FetchAritcleList reads specific page of post list.
 //
 //게시글 목록의 지정된 페이지를 읽어옵니다
-func FetchAndParsePage(gallID string, page int) ([]ArticleData, error) {
-	dcpg := fetchPage(gallID, page)
+func FetchAritcleList(gallID string, page int) ([]ArticleData, error) {
+	dcpg := fetchRawArticleList(gallID, page)
 	if dcpg == nil {
 		return nil, errors.New("Page fetch error")
 	}
