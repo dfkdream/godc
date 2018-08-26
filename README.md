@@ -1,6 +1,6 @@
-# Go-DCApi
-[![Go Report Card](https://goreportcard.com/badge/github.com/dfkdream/Go-DCApi)](https://goreportcard.com/report/github.com/dfkdream/Go-DCApi)
-[![GoDoc](https://godoc.org/github.com/dfkdream/Go-DCApi?status.svg)](https://godoc.org/github.com/dfkdream/Go-DCApi)
+# godc 
+[![Go Report Card](https://goreportcard.com/badge/github.com/dfkdream/godc)](https://goreportcard.com/report/github.com/dfkdream/godc)
+[![GoDoc](https://godoc.org/github.com/dfkdream/godc?status.svg)](https://godoc.org/github.com/dfkdream/godc)
 
 디시인사이드 비공식 API
 
@@ -8,11 +8,11 @@
 
 ## Install
 
-`go get github.com/dfkdream/Go-DCApi`
+`go get github.com/dfkdream/godc`
 
 ## Document
 
-* [godoc](https://godoc.org/github.com/dfkdream/Go-DCApi)
+* [godoc](https://godoc.org/github.com/dfkdream/godc)
 
 ### ArticleData
 
@@ -37,7 +37,7 @@ import (
     "fmt"
     "log"
 
-    "github.com/dfkdream/Go-DCApi"
+    "github.com/dfkdream/godc"
 )
 
 func main() {
