@@ -20,12 +20,23 @@
 ---------|--------|------
 URL | string | 게시글 URL
 Title | string | 게시글 제목
+Type | string | 게시글 타입
 ReplyCount | string | 댓글 수
 Name | string | 작성자 이름
 Timestamp | string | 작성 시간
 ViewCounter | string | 조회수
 UpVote | string | 추천 수
 WriterID | string( `\|` 로 구분) | 작성자 ID/IP
+
+#### ArticleData.Type
+
+string | 설명
+-----|-----
+`ico_pic ico_t` | 텍스트만
+`ico_pic ico_p_y` | 이미지 포함
+`ico_pic ico_mv` | 동영상 포함
+`ico_pic ico_t_c` | 텍스트만, 개념글
+`ico_pic ico_p_c` | 이미지 포함, 개념글
 
 ## Example Code
 
@@ -34,30 +45,31 @@ GalleryID 갤러리의 게시글 목록 1페이지를 읽어옵니다.
 package main
 
 import (
-    "fmt"
-    "log"
+	"fmt"
+	"log"
 
-    "github.com/dfkdream/godc"
+	"github.com/dfkdream/godc"
 )
 
 func main() {
-    dat, err := godc.FetchArticleList("galleryID", 1)
+	dat, err := godc.FetchArticleList("yurucam", 1)
 
-    if err != nil {
-        log.Fatal(err)
-    }
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    for index, data := range dat {
-        fmt.Printf("=============article%d==============\n", index)
-        fmt.Printf("URL: %s\nTitle: %s\nReplyCount: %s\nName : %s\nTimestamp : %s\nViewCounter : %s\nUpVote : %s\nWriterID : %s\n",
-            data.URL,
-            data.Title,
-            data.ReplyCount,
-            data.Name,
-            data.Timestamp,
-            data.ViewCounter,
-            data.UpVote,
-            data.WriterID)
-    }
+	for index, data := range dat {
+		fmt.Printf("=============article%d==============\n", index)
+		fmt.Printf("URL: %s\nTitle: %s\nType: %s\nReplyCount: %s\nName : %s\nTimestamp : %s\nViewCounter : %s\nUpVote : %s\nWriterID : %s\n",
+			data.URL,
+			data.Title,
+			data.Type,
+			data.ReplyCount,
+			data.Name,
+			data.Timestamp,
+			data.ViewCounter,
+			data.UpVote,
+			data.WriterID)
+	}
 }
 ```

@@ -5,6 +5,7 @@ package godc
 
 import (
 	"errors"
+	"regexp"
 	"strings"
 
 	"golang.org/x/net/html"
@@ -113,6 +114,23 @@ func FetchAritcleList(gallID string, page int) ([]ArticleData, error) {
 		default:
 			return nil, errors.New("Data processing error")
 		}
+	}
+
+	articleTypes := make([]string, 0)
+	var parseArticleType func(*html.Node)
+	var vaildType = regexp.MustCompile(`ico_pic ico_.+`)
+	parseArticleType = func(n *html.Node) {
+		if n.Type == html.ElementNode && n.Data == "span" && len(n.Attr) > 0 && vaildType.MatchString(n.Attr[0].Val) {
+			articleTypes = append(articleTypes, n.Attr[0].Val)
+		}
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			parseArticleType(c)
+		}
+	}
+	parseArticleType(doc)
+
+	for index, typeData := range articleTypes {
+		processedResult[index].Type = typeData
 	}
 
 	return processedResult, nil
