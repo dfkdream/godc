@@ -4,7 +4,7 @@
 
 디시인사이드 비공식 API
 
-게시글 목록 읽기 기능만 지원하고 있습니다. 나머지 기능은 추가 예정
+게시글 목록,게시글 내용 읽기 기능만 지원하고 있습니다. 나머지 기능은 추가 예정
 
 ## Install
 
@@ -37,6 +37,28 @@ string | 설명
 `ico_pic ico_mv` | 동영상 포함
 `ico_pic ico_t_c` | 텍스트만, 개념글
 `ico_pic ico_p_c` | 이미지 포함, 개념글
+
+### ArticleBody
+필드 이름 | 자료형 | 설명
+---------|--------|-------
+Title | string | 게시글 제목
+Name | string | 작성자 이름
+IP | string | 작성자 IP(유동일 경우만)
+Timestamp | string | 작성 시간
+ViewCounter | string | 조회수
+Body | string(HTML) | 게시글 내용
+UpVote | string | 추천 수
+DownVote | string | 비추천 수
+Replies | []Reply | 댓글
+
+#### Reply
+필드 이름 | 자료형 | 설명
+---------|--------|--------
+URL | string | 갤로그 주소
+Name | string | 작성자 이름
+IP | string | 작성자 IP(유동일 경우만)
+Body | string(HTML) | 댓글 내용
+Timestamp | string | 작성 시간
 
 ## Example Code
 
