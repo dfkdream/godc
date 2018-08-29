@@ -18,6 +18,11 @@ func renderNode(n *html.Node) string {
 	return buf.String()
 }
 
+func removeScript(doc string) string {
+	vaildScript := regexp.MustCompile(`<script\b[^>]*>([\s\S]*?)</script>`)
+	return vaildScript.ReplaceAllString(doc, "")
+}
+
 //FetchArticleData reads article data of specific URL
 //
 //지정한 URL의 게시물을 읽어옵니다.
@@ -110,7 +115,7 @@ func FetchArticleData(URL string) (*ArticleBody, error) {
 	var searchBody func(*html.Node)
 	searchBody = func(n *html.Node) {
 		if n.Type == html.ElementNode && n.Data == "div" && len(n.Attr) > 0 && n.Attr[0].Val == "view_main" {
-			result.Body = strings.TrimSpace(renderNode(n))
+			result.Body = removeScript(strings.TrimSpace(renderNode(n)))
 		}
 		for c := n.FirstChild; c != nil; c = c.NextSibling {
 			searchBody(c)
@@ -215,11 +220,11 @@ func FetchArticleData(URL string) (*ArticleBody, error) {
 		var parseBody func(*html.Node)
 		parseBody = func(n *html.Node) {
 			if n.Type == html.ElementNode && n.Data == "span" && len(n.Attr) > 0 && n.Attr[0].Val == "txt" && n.FirstChild != nil {
-				parsedComment.Body = strings.TrimSpace(renderNode(n.FirstChild))
+				parsedComment.Body = removeScript(strings.TrimSpace(renderNode(n.FirstChild)))
 			}
 			if parsedComment.Body == "" {
 				if n.Type == html.ElementNode && n.Data == "img" {
-					parsedComment.Body = strings.TrimSpace(renderNode(n))
+					parsedComment.Body = removeScript(strings.TrimSpace(renderNode(n)))
 				}
 			}
 			for c := n.FirstChild; c != nil; c = c.NextSibling {
