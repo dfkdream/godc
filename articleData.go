@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"golang.org/x/net/html"
@@ -156,6 +157,9 @@ func FetchArticleData(URL string) (*ArticleBody, error) {
 	}
 	searchIP(doc)
 
+	if commentNo, err := strconv.Atoi(result.ReplyCount); err == nil && commentNo == 0 {
+		return &result, nil
+	}
 	//Comment 처리
 	var gallComment *html.Node
 	var searchGallComment func(*html.Node)
@@ -173,7 +177,7 @@ func FetchArticleData(URL string) (*ArticleBody, error) {
 	var sepComments func(*html.Node)
 	sepComments = func(n *html.Node) {
 		var vaildComment = regexp.MustCompile(`comment_cnt_[0-9]*$`)
-		if n.Type == html.ElementNode && n.Data == "li" && len(n.Attr) > 0 && vaildComment.MatchString(n.Attr[0].Val) {
+		if n != nil && n.Type == html.ElementNode && n.Data == "li" && len(n.Attr) > 0 && vaildComment.MatchString(n.Attr[0].Val) {
 			comments = append(comments, n)
 		}
 		for c := n.FirstChild; c != nil; c = c.NextSibling {
