@@ -60,6 +60,16 @@ IP | string | 작성자 IP(유동일 경우만)
 Body | string(HTML) | 댓글 내용
 Timestamp | string | 작성 시간
 
+### GallInfo
+필드 이름 | 자료형 | 설명
+---------|--------|--------
+Category | string | 갤러리 카테고리
+Name | string | 갤러리 코드
+KoName | string | 갤러리 이름
+Manager | string | 매니저 ID
+SubManager | string( `,` 로 구분) | 부매니저 ID
+No | string | 겔러리 번호
+
 ## Example Code
 
 GalleryID 갤러리의 게시글 목록 1페이지를 읽어옵니다.

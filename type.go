@@ -18,6 +18,7 @@ type ArticleBody struct {
 	Title       string
 	Name        string
 	IP          string
+	GallogURL   string
 	Timestamp   string
 	ViewCounter string
 	ReplyCount  string
@@ -34,4 +35,14 @@ type Reply struct {
 	IP        string
 	Body      string
 	Timestamp string
+}
+
+//GallInfo contains gallery info used by FetchMajor/MinorGallList.
+type GallInfo struct {
+	Category   string `json:"category"`
+	Name       string `json:"name"`
+	KoName     string `json:"ko_name"`
+	Manager    string `json:"manager"`
+	SubManager string `json:"submanager"`
+	No         string `json:"no"`
 }
