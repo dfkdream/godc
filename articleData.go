@@ -146,6 +146,18 @@ func FetchArticleData(URL string) (*ArticleBody, error) {
 	}
 	searchDownVote(gallContent)
 
+	var boxShare *html.Node
+	var searchBoxShare func(*html.Node)
+	searchBoxShare = func(n *html.Node) {
+		if n.Type == html.ElementNode && n.Data == "div" && len(n.Attr) > 0 && n.Attr[0].Val == "box_share" {
+			boxShare = n
+		}
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			searchBoxShare(c)
+		}
+	}
+	searchBoxShare(gallContent)
+
 	var searchIP func(*html.Node)
 	searchIP = func(n *html.Node) {
 		if n.Type == html.ElementNode && n.Data == "span" && len(n.Attr) > 0 && n.Attr[0].Val == "ip" && n.FirstChild != nil {
@@ -155,7 +167,18 @@ func FetchArticleData(URL string) (*ArticleBody, error) {
 			searchIP(c)
 		}
 	}
-	searchIP(doc)
+	searchIP(boxShare)
+
+	var searchGallogURL func(*html.Node)
+	searchGallogURL = func(n *html.Node) {
+		if n.Type == html.ElementNode && n.Data == "a" && len(n.Attr) > 1 && n.Attr[1].Val == "btn btn_gall" {
+			result.GallogURL = n.Attr[0].Val
+		}
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			searchGallogURL(c)
+		}
+	}
+	searchGallogURL(boxShare)
 
 	if commentNo, err := strconv.Atoi(result.ReplyCount); err == nil && commentNo == 0 {
 		return &result, nil
