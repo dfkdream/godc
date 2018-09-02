@@ -33,7 +33,7 @@ func FetchArticleSearch(gallID string, page string, query string, searchType str
 				}
 				if depth == 13 || depth == 14 {
 					if n.Type == html.ElementNode && n.Data == "span" && len(n.Attr) == 0 || (len(n.Attr) > 0 && n.Attr[0].Key != "style") {
-						if len(n.Attr) > 0 && n.Attr[0].Val == "txt" {
+						if len(n.Attr) > 0 && n.Attr[0].Val == "txt" || len(n.Attr) > 0 && n.Attr[0].Val == "name" {
 							rCombined := ""
 							for d := n.FirstChild; d != nil; d = d.NextSibling {
 								rCombined += renderNode(d)
