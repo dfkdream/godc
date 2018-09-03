@@ -1,5 +1,9 @@
 package godc
 
+type ArticleSearchData struct{
+	Articles []ArticleData
+	NextPos string
+}
 //ArticleData contains post(list) informations.
 type ArticleData struct {
 	URL         string
