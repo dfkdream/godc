@@ -55,7 +55,13 @@ func FetchArticleData(URL string) (*ArticleBody, error) {
 	var searchTitle func(*html.Node)
 	searchTitle = func(n *html.Node) {
 		if n.Type == html.ElementNode && n.Data == "span" && len(n.Attr) > 0 && n.Attr[0].Val == "tit_view" {
-			result.Title = strings.TrimSpace(n.FirstChild.Data)
+			tmpResult := ""
+			for d := n.FirstChild; d != nil; d = d.NextSibling {
+				if d != nil && d.Data != "img" {
+					tmpResult += renderNode(d)
+				}
+			}
+			result.Title = strings.TrimSpace(tmpResult)
 		}
 		for c := n.FirstChild; c != nil; c = c.NextSibling {
 			searchTitle(c)
@@ -82,7 +88,13 @@ func FetchArticleData(URL string) (*ArticleBody, error) {
 			if vaildTimestamp.MatchString(n.FirstChild.Data) {
 				result.Timestamp = n.FirstChild.Data
 			} else {
-				result.Name = n.FirstChild.Data
+				tmpResult := ""
+				for d := n.FirstChild; d != nil; d = d.NextSibling {
+					if d != nil && d.Data != "img" {
+						tmpResult += renderNode(d)
+					}
+				}
+				result.Name = strings.TrimSpace(tmpResult)
 			}
 		}
 		for c := n.FirstChild; c != nil; c = c.NextSibling {

@@ -12,8 +12,8 @@ import (
 //FetchArticleSearch reads specific page of post search result.
 //
 //페이지 검색의 지정한 페이지를 읽어옵니다.
-func FetchArticleSearch(gallID string, page string, query string, searchType string,qserpos string) (*ArticleSearchData, error) {
-	dcpg := fetchURL(fmt.Sprintf("http://m.dcinside.com/list.php?serVal=%s&id=%s&s_type=%s&page=%s&ser_pos=%s", query, gallID, searchType, page,qserpos))
+func FetchArticleSearch(gallID string, page string, query string, searchType string, qserpos string) (*ArticleSearchData, error) {
+	dcpg := fetchURL(fmt.Sprintf("http://m.dcinside.com/list.php?serVal=%s&id=%s&s_type=%s&page=%s&ser_pos=%s", query, gallID, searchType, page, qserpos))
 	if dcpg == nil {
 		return nil, errors.New("Page fetch error")
 	}
@@ -53,10 +53,10 @@ func FetchArticleSearch(gallID string, page string, query string, searchType str
 	f(doc, 0)
 
 	res = res[:len(res)-10]
-	if len(res)<5{
-		return nil,nil
+	if len(res) < 5 {
+		return nil, nil
 	}
-	res=res[5:]
+	res = res[5:]
 
 	currentIndex := 0
 	cuttedResult := make([][]string, 0)
@@ -147,9 +147,9 @@ func FetchArticleSearch(gallID string, page string, query string, searchType str
 
 	var serpos string
 	var parseSerPos func(*html.Node)
-	parseSerPos=func(n *html.Node){
-		if n.Type == html.ElementNode && n.Data == "a" && len(n.Attr) > 1 &&n.Attr[1].Val=="inner_prev" {
-			serpos=n.Attr[0].Val
+	parseSerPos = func(n *html.Node) {
+		if n.Type == html.ElementNode && n.Data == "a" && len(n.Attr) > 1 && n.Attr[1].Val == "inner_prev" {
+			serpos = n.Attr[0].Val
 		}
 		for c := n.FirstChild; c != nil; c = c.NextSibling {
 			parseSerPos(c)
@@ -157,5 +157,5 @@ func FetchArticleSearch(gallID string, page string, query string, searchType str
 	}
 	parseSerPos(doc)
 
-	return &ArticleSearchData{Articles:processedResult,NextPos:serpos}, nil
+	return &ArticleSearchData{Articles: processedResult, NextPos: serpos}, nil
 }
