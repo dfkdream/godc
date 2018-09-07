@@ -237,7 +237,11 @@ func FetchArticleData(URL string) (*ArticleBody, error) {
 		var parseIPName func(*html.Node)
 		parseIPName = func(n *html.Node) {
 			if n.Type == html.ElementNode && n.Data == "span" && len(n.Attr) > 0 && n.Attr[0].Val == "id" && n.FirstChild != nil {
-				parsedComment.Name = n.FirstChild.Data[1:][:len(n.FirstChild.Data)-2]
+				rCombined := ""
+				for d := n.FirstChild; d != nil; d = d.NextSibling {
+					rCombined += renderNode(d)
+				}
+				parsedComment.Name = rCombined[1:][:len(rCombined)-2]
 			}
 			for c := n.FirstChild; c != nil; c = c.NextSibling {
 				parseIPName(c)
