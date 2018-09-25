@@ -196,17 +196,20 @@ func FetchArticleData(URL string) (*ArticleBody, error) {
 		return &result, nil
 	}
 	//Comment 처리
-	var gallComment *html.Node
-	var searchGallComment func(*html.Node)
-	searchGallComment = func(n *html.Node) {
-		if n.Type == html.ElementNode && len(n.Attr) > 0 && n.Attr[0].Val == "wrap_list" {
-			gallComment = n
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			searchGallComment(c)
-		}
+	gallComment, err := html.Parse(fetchAllReply(URL))
+	if err != nil {
+		return nil, err
 	}
-	searchGallComment(doc)
+	/*	var searchGallComment func(*html.Node)
+		searchGallComment = func(n *html.Node) {
+			if n.Type == html.ElementNode && len(n.Attr) > 0 && n.Attr[0].Val == "wrap_list" {
+				gallComment = n
+			}
+			for c := n.FirstChild; c != nil; c = c.NextSibling {
+				searchGallComment(c)
+			}
+		}
+		searchGallComment(doc)*/
 
 	comments := make([]*html.Node, 0)
 	var sepComments func(*html.Node)
