@@ -49,7 +49,7 @@ func fetchReply(URL string, page int) io.ReadCloser {
 
 func fetchAllReply(URL string) *strings.Reader {
 	result := ""
-	page := 1
+	page := 0
 	for {
 		docReader := fetchReply(URL, page)
 		resTmp, err := ioutil.ReadAll(docReader)

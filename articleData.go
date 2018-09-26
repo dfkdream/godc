@@ -200,16 +200,6 @@ func FetchArticleData(URL string) (*ArticleBody, error) {
 	if err != nil {
 		return nil, err
 	}
-	/*	var searchGallComment func(*html.Node)
-		searchGallComment = func(n *html.Node) {
-			if n.Type == html.ElementNode && len(n.Attr) > 0 && n.Attr[0].Val == "wrap_list" {
-				gallComment = n
-			}
-			for c := n.FirstChild; c != nil; c = c.NextSibling {
-				searchGallComment(c)
-			}
-		}
-		searchGallComment(doc)*/
 
 	comments := make([]*html.Node, 0)
 	var sepComments func(*html.Node)
@@ -223,6 +213,20 @@ func FetchArticleData(URL string) (*ArticleBody, error) {
 		}
 	}
 	sepComments(gallComment)
+
+	if len(comments) < 1 {
+		var searchGallComment func(*html.Node)
+		searchGallComment = func(n *html.Node) {
+			if n.Type == html.ElementNode && len(n.Attr) > 0 && n.Attr[0].Val == "wrap_list" {
+				gallComment = n
+			}
+			for c := n.FirstChild; c != nil; c = c.NextSibling {
+				searchGallComment(c)
+			}
+		}
+		searchGallComment(doc)
+		sepComments(gallComment)
+	}
 
 	for _, commentNode := range comments {
 		parsedComment := Reply{}
