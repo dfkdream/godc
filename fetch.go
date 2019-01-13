@@ -34,5 +34,5 @@ func fetchURL(URL string) io.ReadCloser {
 }
 
 func fetchRawArticleList(gallCode string, page int) io.ReadCloser {
-	return fetchURL("http://m.dcinside.com/list.php?id=" + gallCode + "&page=" + strconv.Itoa(page))
+	return fetchURL("http://m.dcinside.com/board/" + gallCode + "?page=" + strconv.Itoa(page))
 }
