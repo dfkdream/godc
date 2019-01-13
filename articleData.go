@@ -93,6 +93,11 @@ func FetchArticleData(URL string) (*ArticleBody, error) {
 			return
 		}
 		var comment Reply
+		if v, _ := s.Attr("class"); v == "comment" {
+			comment.Type = "reply"
+		} else if v == "comment-add " {
+			comment.Type = "re-reply"
+		}
 		comment.URL, _ = s.Find("a.nick").Attr("href")
 		s.Find("a.nick").Contents().Each(func(j int, t *goquery.Selection) {
 			if goquery.NodeName(t) == "#text" {

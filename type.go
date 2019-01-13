@@ -41,6 +41,7 @@ type Reply struct {
 	Name      string
 	ID        string
 	IP        string
+	Type      string
 	Body      string
 	Timestamp string
 }
