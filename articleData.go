@@ -3,11 +3,12 @@ package godc
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"io"
 	"regexp"
-	"strconv"
 	"strings"
 
+	"github.com/PuerkitoBio/goquery"
 	"golang.org/x/net/html"
 )
 
@@ -32,281 +33,81 @@ func FetchArticleData(URL string) (*ArticleBody, error) {
 	if dcArticle == nil {
 		return nil, errors.New("Page fetch error")
 	}
-	doc, err := html.Parse(dcArticle)
-	if err != nil {
-		return nil, errors.New("html parse error")
-	}
-
-	result := ArticleBody{}
-
-	//Body 처리
-	var gallContent *html.Node
-	var searchGallContent func(*html.Node)
-	searchGallContent = func(n *html.Node) {
-		if n.Type == html.ElementNode && len(n.Attr) > 0 && n.Attr[0].Val == "gall_content" {
-			gallContent = n
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			searchGallContent(c)
-		}
-	}
-	searchGallContent(doc)
-
-	var searchTitle func(*html.Node)
-	searchTitle = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "span" && len(n.Attr) > 0 && n.Attr[0].Val == "tit_view" {
-			tmpResult := ""
-			for d := n.FirstChild; d != nil; d = d.NextSibling {
-				if d != nil && d.Data != "img" {
-					tmpResult += renderNode(d)
-				}
-			}
-			result.Title = strings.TrimSpace(tmpResult)
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			searchTitle(c)
-		}
-	}
-	searchTitle(gallContent)
-
-	var infoHeader *html.Node
-	var searchInfoHeader func(*html.Node)
-	searchInfoHeader = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "span" && len(n.Attr) > 0 && n.Attr[0].Val == "info_edit" {
-			infoHeader = n
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			searchInfoHeader(c)
-		}
-	}
-	searchInfoHeader(gallContent)
-
-	var searchName func(*html.Node)
-	vaildTimestamp := regexp.MustCompile(`\d+\.\d+\.\d+ \d+\:\d+$`)
-	searchName = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "span" && len(n.Attr) == 0 && n.FirstChild != nil {
-			if vaildTimestamp.MatchString(n.FirstChild.Data) {
-				result.Timestamp = n.FirstChild.Data
-			} else {
-				tmpResult := ""
-				for d := n.FirstChild; d != nil; d = d.NextSibling {
-					if d != nil && d.Data != "img" {
-						tmpResult += renderNode(d)
-					}
-				}
-				result.Name = strings.TrimSpace(tmpResult)
-			}
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			searchName(c)
-		}
-	}
-	searchName(infoHeader)
-
-	var searchViewCounter func(*html.Node)
-	searchViewCounter = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "span" && len(n.Attr) == 1 && n.Attr[0].Val == "num" && n.FirstChild != nil {
-			result.ViewCounter = n.FirstChild.Data
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			searchViewCounter(c)
-		}
-	}
-	searchViewCounter(infoHeader)
-
-	var searchReplyCount func(*html.Node)
-	searchReplyCount = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "span" && len(n.Attr) > 1 && n.Attr[1].Val == "comment_dirc" && n.FirstChild != nil {
-			result.ReplyCount = n.FirstChild.Data
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			searchReplyCount(c)
-		}
-	}
-	searchReplyCount(infoHeader)
-
-	var searchBody func(*html.Node)
-	searchBody = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "div" && len(n.Attr) > 0 && n.Attr[0].Val == "view_main" {
-			result.Body = removeScript(strings.TrimSpace(renderNode(n)))
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			searchBody(c)
-		}
-	}
-	searchBody(gallContent)
-
-	var searchUpVote func(*html.Node)
-	searchUpVote = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "span" && len(n.Attr) > 0 && n.Attr[0].Val == "recomm_btn" && n.FirstChild != nil {
-			result.UpVote = n.FirstChild.Data
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			searchUpVote(c)
-		}
-	}
-	searchUpVote(gallContent)
-
-	var searchDownVote func(*html.Node)
-	searchDownVote = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "span" && len(n.Attr) > 0 && n.Attr[0].Val == "nonrecomm_btn" && n.FirstChild != nil {
-			result.DownVote = n.FirstChild.Data
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			searchDownVote(c)
-		}
-	}
-	searchDownVote(gallContent)
-
-	var boxShare *html.Node
-	var searchBoxShare func(*html.Node)
-	searchBoxShare = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "div" && len(n.Attr) > 0 && n.Attr[0].Val == "box_share" {
-			boxShare = n
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			searchBoxShare(c)
-		}
-	}
-	searchBoxShare(gallContent)
-
-	var searchIP func(*html.Node)
-	searchIP = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "span" && len(n.Attr) > 0 && n.Attr[0].Val == "ip" && n.FirstChild != nil {
-			result.IP = n.FirstChild.Data
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			searchIP(c)
-		}
-	}
-	searchIP(boxShare)
-
-	var searchGallogURL func(*html.Node)
-	searchGallogURL = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "a" && len(n.Attr) > 1 && n.Attr[1].Val == "btn btn_gall" {
-			result.GallogURL = n.Attr[0].Val
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			searchGallogURL(c)
-		}
-	}
-	searchGallogURL(boxShare)
-
-	if commentNo, err := strconv.Atoi(result.ReplyCount); err == nil && commentNo == 0 {
-		return &result, nil
-	}
-	//Comment 처리
-	gallComment, err := html.Parse(fetchAllReply(URL))
+	qdoc, err := goquery.NewDocumentFromReader(dcArticle)
 	if err != nil {
 		return nil, err
 	}
 
-	comments := make([]*html.Node, 0)
-	var sepComments func(*html.Node)
-	sepComments = func(n *html.Node) {
-		var vaildComment = regexp.MustCompile(`comment_cnt_[0-9]*$`)
-		if n != nil && n.Type == html.ElementNode && n.Data == "li" && len(n.Attr) > 0 && vaildComment.MatchString(n.Attr[0].Val) {
-			comments = append(comments, n)
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			sepComments(c)
-		}
-	}
-	sepComments(gallComment)
+	result := ArticleBody{}
 
-	if len(comments) < 1 {
-		var searchGallComment func(*html.Node)
-		searchGallComment = func(n *html.Node) {
-			if n.Type == html.ElementNode && len(n.Attr) > 0 && n.Attr[0].Val == "wrap_list" {
-				gallComment = n
-			}
-			for c := n.FirstChild; c != nil; c = c.NextSibling {
-				searchGallComment(c)
-			}
-		}
-		searchGallComment(doc)
-		sepComments(gallComment)
-	}
+	result.IsNew = "true" //구버전 구분용
 
-	for _, commentNode := range comments {
-		parsedComment := Reply{}
-		var parseName func(*html.Node)
-		parseName = func(n *html.Node) {
-			if n.Type == html.ElementNode && n.Data == "span" && len(n.Attr) == 0 && n.FirstChild != nil {
-				parsedComment.Name = n.FirstChild.Data[1:]
-			}
-			for c := n.FirstChild; c != nil; c = c.NextSibling {
-				parseName(c)
-			}
+	//gallview-tit-box 처리파트 시작
+	headerdiv := qdoc.Find("div.gallview-tit-box")
+	result.Title = strings.TrimSpace(headerdiv.Find("span.tit").Text())
+	infoul := headerdiv.Find("ul.ginfo2")
+	infoul.Find("li").Each(func(i int, s *goquery.Selection) {
+		switch i {
+		case 0:
+			result.Name = s.Text()
+		case 1:
+			result.Timestamp = s.Text()
 		}
-		parseName(commentNode)
+	})
+	result.GallogURL, _ = headerdiv.Find("a.btn-line-gray").Attr("href")
+	//gallview-tit-box 처리파트 종료
 
-		var parseIPName func(*html.Node)
-		parseIPName = func(n *html.Node) {
-			if n.Type == html.ElementNode && n.Data == "span" && len(n.Attr) > 0 && n.Attr[0].Val == "id" && n.FirstChild != nil {
-				rCombined := ""
-				for d := n.FirstChild; d != nil; d = d.NextSibling {
-					rCombined += renderNode(d)
-				}
-				parsedComment.Name = rCombined[1:][:len(rCombined)-2]
-			}
-			for c := n.FirstChild; c != nil; c = c.NextSibling {
-				parseIPName(c)
-			}
+	//gallview-thum-btm-inner 처리파트 시작
+	articleInner := qdoc.Find("div.gall-thum-btm-inner")
+	//조회수-추천-댓글수 처리파트 시작
+	aiGinfo2 := articleInner.Find("ul.ginfo2")
+	aiGinfo2.Find("li").Each(func(i int, s *goquery.Selection) {
+		switch i {
+		case 0:
+			fmt.Sscanf(s.Text(), "조회수 %s", &result.ViewCounter)
+		case 1:
+			fmt.Sscanf(s.Text(), "추천 %s", &result.UpVote)
+		case 2:
+			result.ReplyCount = s.Find("span.point-red").Text()
 		}
-		parseIPName(commentNode)
+	})
+	//조회수-추천-댓글수 처리파트 종료
 
-		var parseURL func(*html.Node)
-		parseURL = func(n *html.Node) {
-			if n.Type == html.ElementNode && n.Data == "a" && len(n.Attr) > 0 && n.Attr[1].Val == "id" && n.FirstChild != nil {
-				parsedComment.URL = n.Attr[0].Val
-			}
-			for c := n.FirstChild; c != nil; c = c.NextSibling {
-				parseURL(c)
-			}
+	//thum-txt(본문) 처리파트 시작
+	rawThumtxt, _ := articleInner.Find("div.thum-txtin").Html()
+	result.Body = removeScript(strings.TrimSpace(rawThumtxt))
+	//thum-txt(본문) 처리파트 종료
+
+	//추천-비추천 처리파트 시작
+	result.UpVote += "/" + articleInner.Find("span#recomm_btn_member.num").Text() //고닉추
+	result.DownVote = articleInner.Find("span#nonrecomm_btn.no-ct").Text()        //비추
+	//추천-비추천 처리파트 종료
+	//gallview-thum-btm-inner 처리파트 종료
+
+	//all-comment-list(댓글) 처리파트 시작
+	comments := make([]Reply, 0)
+
+	allcomment := qdoc.Find("ul.all-comment-lst")
+	allcomment.Find("li").Each(func(i int, s *goquery.Selection) {
+		if _, exist := s.Attr("id"); !exist {
+			return
 		}
-		parseURL(commentNode)
-
-		var parseBody func(*html.Node)
-		parseBody = func(n *html.Node) {
-			if n.Type == html.ElementNode && n.Data == "span" && len(n.Attr) > 0 && n.Attr[0].Val == "txt" && n.FirstChild != nil {
-				parsedComment.Body = removeScript(strings.TrimSpace(renderNode(n.FirstChild)))
+		var comment Reply
+		comment.URL, _ = s.Find("a.nick").Attr("href")
+		s.Find("a.nick").Contents().Each(func(j int, t *goquery.Selection) {
+			if goquery.NodeName(t) == "#text" {
+				comment.Name = t.Text()
 			}
-			if parsedComment.Body == "" {
-				if n.Type == html.ElementNode && n.Data == "img" {
-					parsedComment.Body = removeScript(strings.TrimSpace(renderNode(n)))
-				}
-			}
-			for c := n.FirstChild; c != nil; c = c.NextSibling {
-				parseBody(c)
-			}
-		}
-		parseBody(commentNode)
-
-		var parseTimestamp func(*html.Node)
-		parseTimestamp = func(n *html.Node) {
-			if n.Type == html.ElementNode && n.Data == "span" && len(n.Attr) > 0 && n.Attr[0].Val == "date" && n.FirstChild != nil {
-				parsedComment.Timestamp = n.FirstChild.Data
-			}
-			for c := n.FirstChild; c != nil; c = c.NextSibling {
-				parseTimestamp(c)
-			}
-		}
-		parseTimestamp(commentNode)
-
-		var parseIP func(*html.Node)
-		parseIP = func(n *html.Node) {
-			if n.Type == html.ElementNode && n.Data == "span" && len(n.Attr) > 0 && n.Attr[0].Val == "ip" && n.FirstChild != nil {
-				parsedComment.IP = n.FirstChild.Data
-			}
-			for c := n.FirstChild; c != nil; c = c.NextSibling {
-				parseIP(c)
-			}
-		}
-		parseIP(commentNode)
-
-		result.Replies = append(result.Replies, parsedComment)
-	}
+		})
+		comment.ID = s.Find("span.blockCommentId").Text()
+		comment.IP = s.Find("span.ip").Text()
+		comment.Timestamp = s.Find("span.date").Text()
+		commentbHTML, _ := s.Find("p.txt").Html()
+		comment.Body = removeScript(strings.TrimSpace(commentbHTML))
+		comments = append(comments, comment)
+	})
+	//all-comment-list(댓글) 처리파트 종료
+	result.Replies = comments
 
 	return &result, nil
 

@@ -1,9 +1,9 @@
 package godc
 
 //ArticleSearchData contains post info including ser_pos URL
-type ArticleSearchData struct{
+type ArticleSearchData struct {
 	Articles []ArticleData
-	NextPos string
+	NextPos  string
 }
 
 //ArticleData contains post(list) informations.
@@ -21,6 +21,7 @@ type ArticleData struct {
 
 //ArticleBody contains article informations.
 type ArticleBody struct {
+	IsNew       string
 	Title       string
 	Name        string
 	IP          string
@@ -38,6 +39,7 @@ type ArticleBody struct {
 type Reply struct {
 	URL       string
 	Name      string
+	ID        string
 	IP        string
 	Body      string
 	Timestamp string
