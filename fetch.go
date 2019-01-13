@@ -33,6 +33,10 @@ func fetchURL(URL string) io.ReadCloser {
 	return resp.Body
 }
 
-func fetchRawArticleList(gallCode string, page int) io.ReadCloser {
-	return fetchURL("http://m.dcinside.com/board/" + gallCode + "?page=" + strconv.Itoa(page))
+func fetchRawArticleList(gallCode string, page int, recommend bool) io.ReadCloser {
+	rec := ""
+	if recommend {
+		rec = "&recommend=1"
+	}
+	return fetchURL("http://m.dcinside.com/board/" + gallCode + "?page=" + strconv.Itoa(page) + rec)
 }

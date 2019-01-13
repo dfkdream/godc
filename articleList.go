@@ -26,8 +26,8 @@ func attrGet(node *html.Node, attr string) string {
 //FetchArticleList reads specific page of post list.
 //
 //게시글 목록의 지정된 페이지를 읽어옵니다
-func FetchArticleList(gallID string, page int) ([]ArticleData, error) {
-	dcpg := fetchRawArticleList(gallID, page)
+func FetchArticleList(gallID string, page int, recommend bool) ([]ArticleData, error) {
+	dcpg := fetchRawArticleList(gallID, page, recommend)
 	if dcpg == nil {
 		return nil, errors.New("Page fetch error")
 	}
@@ -56,9 +56,9 @@ func FetchArticleList(gallID string, page int) ([]ArticleData, error) {
 			case 1:
 				Timestamp = s.Text()
 			case 2:
-				fmt.Sscanf(s.Text(),"조회 %s",&ViewCounter)
+				fmt.Sscanf(s.Text(), "조회 %s", &ViewCounter)
 			case 3:
-				fmt.Sscanf(s.Text(),"추천 %s",&UpVote)
+				fmt.Sscanf(s.Text(), "추천 %s", &UpVote)
 			}
 		})
 		if URL != "" {
