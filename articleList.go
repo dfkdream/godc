@@ -5,11 +5,23 @@ package godc
 
 import (
 	"errors"
-	"regexp"
-	"strings"
+	"fmt"
 
+	"github.com/PuerkitoBio/goquery"
 	"golang.org/x/net/html"
 )
+
+func attrGet(node *html.Node, attr string) string {
+	if node == nil || len(node.Attr) < 1 {
+		return ""
+	}
+	for _, att := range node.Attr {
+		if att.Key == attr {
+			return att.Val
+		}
+	}
+	return ""
+}
 
 //FetchArticleList reads specific page of post list.
 //
@@ -19,119 +31,39 @@ func FetchArticleList(gallID string, page int) ([]ArticleData, error) {
 	if dcpg == nil {
 		return nil, errors.New("Page fetch error")
 	}
-	doc, err := html.Parse(dcpg)
+	qdoc, err := goquery.NewDocumentFromReader(dcpg)
 	if err != nil {
-		return nil, errors.New("html parse error")
+		return nil, err
 	}
-	res := make([]string, 0)
-	var f func(*html.Node, int)
-	f = func(n *html.Node, depth int) {
-		if n.FirstChild != nil && n.FirstChild.Data != "" {
-			if depth == 11 || depth == 13 || depth == 14 {
-				if depth == 11 {
-					if n.Type == html.ElementNode && n.Data == "a" && len(n.Attr) > 0 && n.Attr[0].Key == "href" && n.Attr[0].Val != "javascript:;" {
-						res = append(res, n.Attr[0].Val)
-					}
-				}
-				if depth == 13 || depth == 14 {
-					res = append(res, n.FirstChild.Data)
-				}
+
+	adataResult := make([]ArticleData, 0)
+	detailList := qdoc.Find("ul.gall-detail-lst")
+	detailList.Find("li").Each(func(i int, s *goquery.Selection) {
+		URL, _ := s.Find("a.lt").Attr("href")
+		Title := s.Find("span.detail-txt").Text()
+		Type, _ := s.Find("span.sp-lst").Attr("class")
+		ReplyCount := s.Find("span.ct").Text()
+		Name := ""
+		Timestamp := ""
+		ViewCounter := ""
+		UpVote := ""
+		WriterID := s.Find("span.blockInfo").Text()
+		ginfo := s.Find("ul.ginfo")
+		ginfo.Find("li").Each(func(i int, s *goquery.Selection) {
+			switch i {
+			case 0:
+				Name = s.Text()
+			case 1:
+				Timestamp = s.Text()
+			case 2:
+				fmt.Sscanf(s.Text(),"조회 %s",&ViewCounter)
+			case 3:
+				fmt.Sscanf(s.Text(),"추천 %s",&UpVote)
 			}
+		})
+		if URL != "" {
+			adataResult = append(adataResult, ArticleData{URL, Title, Type, ReplyCount, Name, Timestamp, ViewCounter, UpVote, WriterID})
 		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			f(c, depth+1)
-		}
-	}
-	f(doc, 0)
-
-	res = res[:len(res)-10]
-
-	currentIndex := 0
-	cuttedResult := make([][]string, 0)
-	tmpResult := make([]string, 0)
-
-	for {
-		if currentIndex > len(res)-1 {
-			break
-		}
-		tmpResult = append(tmpResult, res[currentIndex])
-		if res[currentIndex] == "|" {
-			tmpResult = append(tmpResult, res[currentIndex+1:currentIndex+7]...)
-			currentIndex += 7
-			cuttedResult = append(cuttedResult, tmpResult)
-			tmpResult = make([]string, 0)
-			continue
-		}
-		currentIndex++
-	}
-
-	processedResult := make([]ArticleData, 0)
-
-	for _, data := range cuttedResult {
-		switch len(data) {
-		case 11:
-			processedResult = append(processedResult,
-				ArticleData{URL: data[0],
-					Title:       data[1],
-					ReplyCount:  "[0]",
-					Name:        data[2],
-					Timestamp:   data[3],
-					ViewCounter: data[6],
-					UpVote:      data[9],
-					WriterID:    data[10]})
-		case 12:
-			if strings.Split(data[11], "|")[0] == "ip" {
-				processedResult = append(processedResult,
-					ArticleData{URL: data[0],
-						Title:       data[1],
-						ReplyCount:  "[0]",
-						Name:        data[2],
-						Timestamp:   data[4],
-						ViewCounter: data[7],
-						UpVote:      data[10],
-						WriterID:    data[11]})
-			} else {
-				processedResult = append(processedResult,
-					ArticleData{URL: data[0],
-						Title:       data[1],
-						ReplyCount:  data[2],
-						Name:        data[3],
-						Timestamp:   data[4],
-						ViewCounter: data[7],
-						UpVote:      data[10],
-						WriterID:    data[11]})
-			}
-		case 13:
-			processedResult = append(processedResult,
-				ArticleData{URL: data[0],
-					Title:       data[1],
-					ReplyCount:  data[2],
-					Name:        data[3],
-					Timestamp:   data[5],
-					ViewCounter: data[8],
-					UpVote:      data[11],
-					WriterID:    data[12]})
-		default:
-			return nil, errors.New("Data processing error")
-		}
-	}
-
-	articleTypes := make([]string, 0)
-	var parseArticleType func(*html.Node)
-	var vaildType = regexp.MustCompile(`ico_pic ico_.+`)
-	parseArticleType = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "span" && len(n.Attr) > 0 && vaildType.MatchString(n.Attr[0].Val) {
-			articleTypes = append(articleTypes, n.Attr[0].Val)
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			parseArticleType(c)
-		}
-	}
-	parseArticleType(doc)
-
-	for index, typeData := range articleTypes {
-		processedResult[index].Type = typeData
-	}
-
-	return processedResult, nil
+	})
+	return adataResult, nil
 }
