@@ -84,7 +84,7 @@ import (
 )
 
 func main() {
-	dat, err := godc.FetchArticleList("yurucam", 1)
+	dat, err := godc.FetchArticleList("<GalleryID>", 1)
 
 	if err != nil {
 		log.Fatal(err)
