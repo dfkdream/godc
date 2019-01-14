@@ -31,30 +31,48 @@ func FetchArticleSearch(gallID string, page string, query string, searchType str
 	detailList := qdoc.Find("ul.gall-detail-lst")
 	detailList.Find("li").Each(func(i int, s *goquery.Selection) {
 		URL, _ := s.Find("a.lt").Attr("href")
+		if URL == "" {
+			return
+		}
 		Title, _ := s.Find("span.detail-txt").Html()
 		Type, _ := s.Find("span.sp-lst").Attr("class")
 		ReplyCount := s.Find("span.ct").Text()
+		Tag := ""
 		Name := ""
 		Timestamp := ""
 		ViewCounter := ""
 		UpVote := ""
 		WriterID := s.Find("span.blockInfo").Text()
 		ginfo := s.Find("ul.ginfo")
+		liCnt := len(ginfo.Find("li").Nodes)
 		ginfo.Find("li").Each(func(i int, s *goquery.Selection) {
-			switch i {
-			case 0:
-				Name, _ = s.Html()
-			case 1:
-				Timestamp = s.Text()
-			case 2:
-				fmt.Sscanf(s.Text(), "조회 %s", &ViewCounter)
-			case 3:
-				fmt.Sscanf(s.Text(), "추천 %s", &UpVote)
+			if liCnt == 5 {
+				switch i {
+				case 0:
+					Tag = s.Text()
+				case 1:
+					Name = s.Text()
+				case 2:
+					Timestamp = s.Text()
+				case 3:
+					fmt.Sscanf(s.Text(), "조회 %s", &ViewCounter)
+				case 4:
+					fmt.Sscanf(s.Text(), "추천 %s", &UpVote)
+				}
+			} else {
+				switch i {
+				case 0:
+					Name, _ = s.Html()
+				case 1:
+					Timestamp = s.Text()
+				case 2:
+					fmt.Sscanf(s.Text(), "조회 %s", &ViewCounter)
+				case 3:
+					fmt.Sscanf(s.Text(), "추천 %s", &UpVote)
+				}
 			}
 		})
-		if URL != "" {
-			asdataResult = append(asdataResult, ArticleData{URL, Title, Type, ReplyCount, Name, Timestamp, ViewCounter, UpVote, WriterID})
-		}
+		asdataResult = append(asdataResult, ArticleData{URL, Title, Type, Tag, ReplyCount, Name, Timestamp, ViewCounter, UpVote, WriterID})
 	})
 
 	nextURL, _ := qdoc.Find("a.next").Attr("href")

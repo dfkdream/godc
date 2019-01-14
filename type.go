@@ -11,6 +11,7 @@ type ArticleData struct {
 	URL         string
 	Title       string
 	Type        string
+	Tag         string
 	ReplyCount  string
 	Name        string
 	Timestamp   string
