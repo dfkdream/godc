@@ -21,6 +21,7 @@
 URL | string | 게시글 URL
 Title | string | 게시글 제목
 Type | string | 게시글 타입
+Tag | string | 게시글 말머리
 ReplyCount | string | 댓글 수
 Name | string | 작성자 이름
 Timestamp | string | 작성 시간
@@ -44,8 +45,10 @@ string | 설명
 Title | string | 게시글 제목
 Name | string | 작성자 이름
 IP | string | 작성자 IP(유동일 경우만)
+GallogURL | string | 작성자 갤로그 URL
 Timestamp | string | 작성 시간
 ViewCounter | string | 조회수
+ReplyCount | string | 댓글 수
 Body | string(HTML) | 게시글 내용
 UpVote | string | 추천 수
 DownVote | string | 비추천 수
@@ -56,7 +59,9 @@ Replies | []Reply | 댓글
 ---------|--------|--------
 URL | string | 갤로그 주소
 Name | string | 작성자 이름
+ID | string | 작성자 ID
 IP | string | 작성자 IP(유동일 경우만)
+Type | string | 댓글(reply)/대댓글(re-reply) 구분
 Body | string(HTML) | 댓글 내용
 Timestamp | string | 작성 시간
 
