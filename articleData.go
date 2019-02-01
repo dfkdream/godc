@@ -84,35 +84,10 @@ func FetchArticleData(URL string) (*ArticleBody, error) {
 	//추천-비추천 처리파트 종료
 	//gallview-thum-btm-inner 처리파트 종료
 
-	//all-comment-list(댓글) 처리파트 시작
-	comments := make([]Reply, 0)
-
-	allcomment := qdoc.Find("ul.all-comment-lst")
-	allcomment.Find("li").Each(func(i int, s *goquery.Selection) {
-		if _, exist := s.Attr("id"); !exist {
-			return
-		}
-		var comment Reply
-		if v, _ := s.Attr("class"); v == "comment" {
-			comment.Type = "reply"
-		} else if v == "comment-add " {
-			comment.Type = "re-reply"
-		}
-		comment.URL, _ = s.Find("a.nick").Attr("href")
-		s.Find("a.nick").Contents().Each(func(j int, t *goquery.Selection) {
-			if goquery.NodeName(t) == "#text" {
-				comment.Name = t.Text()
-			}
-		})
-		comment.ID = s.Find("span.blockCommentId").Text()
-		comment.IP = s.Find("span.ip").Text()
-		comment.Timestamp = s.Find("span.date").Text()
-		commentbHTML, _ := s.Find("p.txt").Html()
-		comment.Body = removeScript(strings.TrimSpace(commentbHTML))
-		comments = append(comments, comment)
-	})
-	//all-comment-list(댓글) 처리파트 종료
-	result.Replies = comments
+	result.Replies, err = fetchAllReply(URL)
+	if err != nil {
+		return nil, err
+	}
 
 	return &result, nil
 
