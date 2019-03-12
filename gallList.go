@@ -8,8 +8,8 @@ import (
 
 //https://github.com/geeksbaek/goinside/blob/master/request.go
 const (
-	majorGalleryListAPI = "http://json.dcinside.com/App/gall_name.php"
-	minorGalleryListAPI = "http://json.dcinside.com/App/gall_name_sub.php"
+	majorGalleryListAPI = "https://json.dcinside.com/App/gall_name.php"
+	minorGalleryListAPI = "https://json.dcinside.com/App/gall_name_sub.php"
 )
 
 //FetchMajorGallList download and parse every major gallery list.

@@ -31,7 +31,7 @@ func fetchReply(URL string, page int) io.ReadCloser {
 	form.Add("del_scope", "")
 	form.Add("csort", "")
 
-	reqURL := "http://m.dcinside.com/ajax/response-comment"
+	reqURL := "https://m.dcinside.com/ajax/response-comment"
 	req, err := http.NewRequest("POST", reqURL, strings.NewReader(form.Encode()))
 	if err != nil {
 		return nil

@@ -14,7 +14,7 @@ import (
 func FetchArticleSearch(gallID string, page string, query string, searchType string, next string) (*ArticleSearchData, error) {
 	var dcpg io.ReadCloser
 	if next == "" || next == "0" {
-		dcpg = fetchURL(fmt.Sprintf("http://m.dcinside.com/board/%s?serval=%s&s_type=%s&page=%s", gallID, query, searchType, page))
+		dcpg = fetchURL(fmt.Sprintf("https://m.dcinside.com/board/%s?serval=%s&s_type=%s&page=%s", gallID, query, searchType, page))
 	} else {
 		dcpg = fetchURL(next)
 	}

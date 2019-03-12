@@ -38,5 +38,5 @@ func fetchRawArticleList(gallCode string, page int, recommend bool) io.ReadClose
 	if recommend {
 		rec = "&recommend=1"
 	}
-	return fetchURL("http://m.dcinside.com/board/" + gallCode + "?page=" + strconv.Itoa(page) + rec)
+	return fetchURL("https://m.dcinside.com/board/" + gallCode + "?page=" + strconv.Itoa(page) + rec)
 }
