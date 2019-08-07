@@ -51,7 +51,8 @@ func FetchArticleList(gallID string, page int, recommend bool) ([]ArticleData, e
 		Timestamp := ""
 		ViewCounter := ""
 		UpVote := ""
-		WriterID := s.Find("span.blockInfo").Text()
+		blockInfo := s.Find("span.blockInfo")
+		WriterID := blockInfo.AttrOr("data-name", "") + "|" + blockInfo.AttrOr("data-info", "")
 		ginfo := s.Find("ul.ginfo")
 		liCnt := len(ginfo.Find("li").Nodes)
 		ginfo.Find("li").Each(func(i int, s *goquery.Selection) {
