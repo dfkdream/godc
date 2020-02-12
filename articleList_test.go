@@ -12,6 +12,6 @@ func TestFetchArticleList(t *testing.T) {
 	}
 
 	for idx, d := range data {
-		t.Log(idx, d)
+		t.Logf("%d %+v\n", idx, d)
 	}
 }
