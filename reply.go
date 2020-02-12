@@ -88,7 +88,7 @@ func parseReply(URL string, page int) ([]Reply, bool, error) {
 				comment.Name = t.Text()
 			}
 		})
-		comment.ID = s.Find("span.blockCommentId").Text()
+		comment.ID = s.Find("span.blockCommentId").AttrOr("data-info", "")
 		comment.IP = s.Find("span.ip").Text()
 		comment.Timestamp = s.Find("span.date").Text()
 		commentbHTML, _ := s.Find("p.txt").Html()
