@@ -1,6 +1,6 @@
 # godc 
 [![Go Report Card](https://goreportcard.com/badge/github.com/dfkdream/godc)](https://goreportcard.com/report/github.com/dfkdream/godc)
-[![GoDoc](https://godoc.org/github.com/dfkdream/godc?status.svg)](https://godoc.org/github.com/dfkdream/godc)
+[![GoDoc](https://godoc.org/github.com/dfkdream/godc?status.svg)](https://pkg.go.dev/github.com/dfkdream/godc)
 
 디시인사이드 비공식 API
 
@@ -12,7 +12,14 @@
 
 ## Document
 
-* [godoc](https://godoc.org/github.com/dfkdream/godc)
+* [godoc](https://pkg.go.dev/github.com/dfkdream/godc)
+
+### Writer
+필드 이름 | 자료형 | 설명
+---------|--------|------
+Name | string | 작성자 이름
+Identity | string | 작성자 ID/IP
+IsSignedIn | bool | 로그인 여부
 
 ### ArticleData
 
@@ -23,11 +30,10 @@ Title | string | 게시글 제목
 Type | string | 게시글 타입
 Tag | string | 게시글 말머리
 ReplyCount | string | 댓글 수
-Name | string | 작성자 이름
 Timestamp | string | 작성 시간
 ViewCounter | string | 조회수
 UpVote | string | 추천 수
-WriterID | string( `\|` 로 구분) | 작성자 ID/IP
+Writer | Writer | 작성자
 
 #### ArticleData.Type
 
@@ -43,9 +49,6 @@ string | 설명
 필드 이름 | 자료형 | 설명
 ---------|--------|-------
 Title | string | 게시글 제목
-Name | string | 작성자 이름
-IP | string | 작성자 IP(유동일 경우만)
-GallogURL | string | 작성자 갤로그 URL
 Timestamp | string | 작성 시간
 ViewCounter | string | 조회수
 ReplyCount | string | 댓글 수
@@ -53,17 +56,15 @@ Body | string(HTML) | 게시글 내용
 UpVote | string | 추천 수
 DownVote | string | 비추천 수
 Replies | []Reply | 댓글
+Writer | Writer | 작성자
 
 #### Reply
 필드 이름 | 자료형 | 설명
 ---------|--------|--------
-URL | string | 갤로그 주소
-Name | string | 작성자 이름
-ID | string | 작성자 ID
-IP | string | 작성자 IP(유동일 경우만)
 Type | string | 댓글(reply)/대댓글(re-reply) 구분
 Body | string(HTML) | 댓글 내용
 Timestamp | string | 작성 시간
+Writer | Writer | 작성자
 
 ### GallInfo
 필드 이름 | 자료형 | 설명
@@ -89,7 +90,7 @@ import (
 )
 
 func main() {
-	dat, err := godc.FetchArticleList("<GalleryID>", 1)
+	dat, err := godc.FetchArticleList("<GalleryID>", 1, false)
 
 	if err != nil {
 		log.Fatal(err)
@@ -102,11 +103,10 @@ func main() {
 			data.Title,
 			data.Type,
 			data.ReplyCount,
-			data.Name,
 			data.Timestamp,
-			data.ViewCounter,
+			data.ViewCount,
 			data.UpVote,
-			data.WriterID)
+			data.Writer)
 	}
 }
 ```
