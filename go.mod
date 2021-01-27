@@ -1,4 +1,4 @@
-module github.com/dfkdream/godc
+module github.com/dfkdream/godc/v2
 
 require (
 	github.com/PuerkitoBio/goquery v1.5.0
