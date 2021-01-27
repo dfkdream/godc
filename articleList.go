@@ -39,45 +39,44 @@ func FetchArticleList(gallID string, page int, recommend bool) ([]ArticleData, e
 	adataResult := make([]ArticleData, 0)
 	detailList := qdoc.Find("ul.gall-detail-lst")
 	detailList.Find("li").Each(func(i int, s *goquery.Selection) {
-		URL, _ := s.Find("a.lt").Attr("href")
-		if URL == "" {
+		var article ArticleData
+		article.URL, _ = s.Find("a.lt").Attr("href")
+		if article.URL == "" {
 			return
 		}
 		article.Title = s.Find("span.subjectin").Text()
 		article.Type, _ = s.Find("span.sp-lst").Attr("class")
 		article.ReplyCount = s.Find("span.ct").Text()
 		blockInfo := s.Find("span.blockInfo")
-		WriterID := blockInfo.AttrOr("data-name", "") + "|" + blockInfo.AttrOr("data-info", "")
+		article.Writer.Name = blockInfo.AttrOr("data-name", "")
+		article.Writer.Identity = blockInfo.AttrOr("data-info", "")
 		ginfo := s.Find("ul.ginfo")
 		liCnt := len(ginfo.Find("li").Nodes)
+		article.Writer.IsSignedIn = ginfo.Find("span").HasClass("sp-nick")
 		ginfo.Find("li").Each(func(i int, s *goquery.Selection) {
 			if liCnt == 5 {
 				switch i {
 				case 0:
-					Tag = s.Text()
-				case 1:
-					Name = s.Text()
+					article.Tag = s.Text()
 				case 2:
-					Timestamp = s.Text()
+					article.Timestamp = s.Text()
 				case 3:
-					fmt.Sscanf(s.Text(), "조회 %s", &ViewCounter)
+					fmt.Sscanf(s.Text(), "조회 %s", &article.ViewCount)
 				case 4:
-					fmt.Sscanf(s.Text(), "추천 %s", &UpVote)
+					fmt.Sscanf(s.Text(), "추천 %s", &article.UpVote)
 				}
 			} else {
 				switch i {
-				case 0:
-					Name = s.Text()
 				case 1:
-					Timestamp = s.Text()
+					article.Timestamp = s.Text()
 				case 2:
-					fmt.Sscanf(s.Text(), "조회 %s", &ViewCounter)
+					fmt.Sscanf(s.Text(), "조회 %s", &article.ViewCount)
 				case 3:
-					fmt.Sscanf(s.Text(), "추천 %s", &UpVote)
+					fmt.Sscanf(s.Text(), "추천 %s", &article.UpVote)
 				}
 			}
 		})
-		adataResult = append(adataResult, ArticleData{URL, Title, Type, Tag, ReplyCount, Name, Timestamp, ViewCounter, UpVote, WriterID})
+		adataResult = append(adataResult, article)
 	})
 	return adataResult, nil
 }
