@@ -82,14 +82,13 @@ func parseReply(URL string, page int) ([]Reply, bool, error) {
 		} else if v == "comment-add " {
 			comment.Type = "re-reply"
 		}
-		comment.URL, _ = s.Find("a.nick").Attr("href")
-		s.Find("a.nick").Contents().Each(func(j int, t *goquery.Selection) {
-			if goquery.NodeName(t) == "#text" {
-				comment.Name = t.Text()
-			}
-		})
-		comment.ID = s.Find("span.blockCommentId").AttrOr("data-info", "")
-		comment.IP = s.Find("span.ip").Text()
+		comment.Writer.IsSignedIn = s.Find("span.sp-nick").HasClass("sp-nick")
+		if comment.Writer.IsSignedIn {
+			comment.Writer.Name = s.Find("a.nick").Text()
+			comment.Writer.Identity = s.Find("span.blockCommentId").AttrOr("data-info", "")
+		} else {
+			comment.Writer.Identity, comment.Writer.Name = extractIdentity(s.Find("a.nick").Text())
+		}
 		comment.Timestamp = s.Find("span.date").Text()
 		commentbHTML, _ := s.Find("p.txt").Html()
 		comment.Body = removeScript(strings.TrimSpace(commentbHTML))

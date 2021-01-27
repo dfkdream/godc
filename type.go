@@ -2,49 +2,49 @@ package godc
 
 //ArticleSearchData contains post info including ser_pos URL
 type ArticleSearchData struct {
-	Articles []ArticleData
-	NextPos  string
+	Articles []ArticleData `json:"articles"`
+	NextPos  string        `json:"nextPos"`
 }
 
-//ArticleData contains post(list) informations.
+//Writer contains writer information.
+type Writer struct {
+	Name       string `json:"name"`
+	IsSignedIn bool   `json:"isSignedIn"`
+	Identity   string `json:"identity"`
+}
+
+//ArticleData contains post(list) information.
 type ArticleData struct {
-	URL         string
-	Title       string
-	Type        string
-	Tag         string
-	ReplyCount  string
-	Name        string
-	Timestamp   string
-	ViewCounter string
-	UpVote      string
-	WriterID    string
+	URL        string `json:"url"`
+	Title      string `json:"title"`
+	Writer     Writer `json:"writer"`
+	Type       string `json:"type"`
+	Tag        string `json:"tag"`
+	ReplyCount string `json:"replyCount"`
+	Timestamp  string `json:"timestamp"`
+	ViewCount  string `json:"viewCount"`
+	UpVote     string `json:"upVote"`
 }
 
-//ArticleBody contains article informations.
+//ArticleBody contains article information.
 type ArticleBody struct {
-	IsNew       string
-	Title       string
-	Name        string
-	IP          string
-	GallogURL   string
-	Timestamp   string
-	ViewCounter string
-	ReplyCount  string
-	Body        string
-	UpVote      string
-	DownVote    string
-	Replies     []Reply
+	Title       string  `json:"title"`
+	Writer      Writer  `json:"writer"`
+	Timestamp   string  `json:"timestamp"`
+	ViewCounter string  `json:"viewCount"`
+	ReplyCount  string  `json:"replyCount"`
+	Body        string  `json:"body"`
+	UpVote      string  `json:"upVote"`
+	DownVote    string  `json:"downVote"`
+	Replies     []Reply `json:"replies"`
 }
 
 //Reply contains reply data of articleBody.
 type Reply struct {
-	URL       string
-	Name      string
-	ID        string
-	IP        string
-	Type      string
-	Body      string
-	Timestamp string
+	Writer    Writer `json:"writer"`
+	Type      string `json:"type"`
+	Body      string `json:"body"`
+	Timestamp string `json:"timestamp"`
 }
 
 //GallInfo contains gallery info used by FetchMajor/MinorGallList.

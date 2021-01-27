@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"path"
 	"regexp"
 	"strings"
 
@@ -51,21 +52,29 @@ func FetchArticleData(URL string) (*ArticleBody, error) {
 
 	result := ArticleBody{}
 
-	result.IsNew = "true" //구버전 구분용
-
 	//gallview-tit-box 처리파트 시작
 	headerdiv := qdoc.Find("div.gallview-tit-box")
 	result.Title = strings.TrimSpace(headerdiv.Find("span.tit").Text())
 	infoul := headerdiv.Find("ul.ginfo2")
+	result.Writer.IsSignedIn = infoul.Find("span").HasClass("sp-nick")
 	infoul.Find("li").Each(func(i int, s *goquery.Selection) {
 		switch i {
 		case 0:
-			result.Name = s.Text()
+			if result.Writer.IsSignedIn {
+				result.Writer.Name = s.Text()
+			} else {
+				result.Writer.Name, result.Writer.Identity = extractIdentity(s.Text())
+			}
 		case 1:
 			result.Timestamp = s.Text()
 		}
 	})
-	result.GallogURL, _ = headerdiv.Find("a.btn-line-gray").Attr("href")
+
+	if result.Writer.IsSignedIn {
+		gallogURL, _ := headerdiv.Find("a.btn-line-gray").Attr("href")
+		result.Writer.Identity = path.Base(gallogURL)
+	}
+
 	//gallview-tit-box 처리파트 종료
 
 	//gallview-thum-btm-inner 처리파트 시작
