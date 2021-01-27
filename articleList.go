@@ -43,14 +43,9 @@ func FetchArticleList(gallID string, page int, recommend bool) ([]ArticleData, e
 		if URL == "" {
 			return
 		}
-		Title := s.Find("span.detail-txt").Text()
-		Type, _ := s.Find("span.sp-lst").Attr("class")
-		ReplyCount := s.Find("span.ct").Text()
-		Tag := ""
-		Name := ""
-		Timestamp := ""
-		ViewCounter := ""
-		UpVote := ""
+		article.Title = s.Find("span.subjectin").Text()
+		article.Type, _ = s.Find("span.sp-lst").Attr("class")
+		article.ReplyCount = s.Find("span.ct").Text()
 		blockInfo := s.Find("span.blockInfo")
 		WriterID := blockInfo.AttrOr("data-name", "") + "|" + blockInfo.AttrOr("data-info", "")
 		ginfo := s.Find("ul.ginfo")

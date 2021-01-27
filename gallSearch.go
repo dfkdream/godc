@@ -34,15 +34,12 @@ func FetchArticleSearch(gallID string, page string, query string, searchType str
 		if URL == "" {
 			return
 		}
-		Title, _ := s.Find("span.detail-txt").Html()
-		Type, _ := s.Find("span.sp-lst").Attr("class")
-		ReplyCount := s.Find("span.ct").Text()
-		Tag := ""
-		Name := ""
-		Timestamp := ""
-		ViewCounter := ""
-		UpVote := ""
-		WriterID := s.Find("span.blockInfo").Text()
+		article.Title, _ = s.Find("span.subjectin").Html()
+		article.Type, _ = s.Find("span.sp-lst").Attr("class")
+		article.ReplyCount = s.Find("span.ct").Text()
+		blockInfo := s.Find("span.blockInfo")
+		article.Writer.Name = blockInfo.AttrOr("data-name", "")
+		article.Writer.Identity = blockInfo.AttrOr("data-info", "")
 		ginfo := s.Find("ul.ginfo")
 		liCnt := len(ginfo.Find("li").Nodes)
 		ginfo.Find("li").Each(func(i int, s *goquery.Selection) {
