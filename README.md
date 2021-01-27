@@ -8,7 +8,7 @@
 
 ## Install
 
-`go get github.com/dfkdream/godc`
+`go get github.com/dfkdream/godc/v2`
 
 ## Document
 
@@ -86,7 +86,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/dfkdream/godc"
+	"github.com/dfkdream/godc/v2"
 )
 
 func main() {
