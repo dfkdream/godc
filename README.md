@@ -98,7 +98,7 @@ func main() {
 
 	for index, data := range dat {
 		fmt.Printf("=============article%d==============\n", index)
-		fmt.Printf("URL: %s\nTitle: %s\nType: %s\nReplyCount: %s\nName : %s\nTimestamp : %s\nViewCounter : %s\nUpVote : %s\nWriterID : %s\n",
+		fmt.Printf("URL: %s\nTitle: %s\nType: %s\nReplyCount: %s\nTimestamp : %s\nViewCount : %s\nUpVote : %s\nWriter : %+v",
 			data.URL,
 			data.Title,
 			data.Type,
