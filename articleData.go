@@ -25,6 +25,17 @@ func removeScript(doc string) string {
 	return vaildScript.ReplaceAllString(doc, "")
 }
 
+func extractIdentity(name string) (string, string) {
+	ipMatcher := regexp.MustCompile(`\(([^)]+)\)$`)
+	matched := ipMatcher.FindStringSubmatch(name)
+	if len(matched) == 0 {
+		return "", ""
+	}
+	ip := matched[len(matched)-1]
+	username := strings.TrimSuffix(name, "("+ip+")")
+	return ip, username
+}
+
 //FetchArticleData reads article data of specific URL
 //
 //지정한 URL의 게시물을 읽어옵니다.
