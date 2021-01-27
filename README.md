@@ -1,6 +1,6 @@
 # godc 
 [![Go Report Card](https://goreportcard.com/badge/github.com/dfkdream/godc)](https://goreportcard.com/report/github.com/dfkdream/godc)
-[![GoDoc](https://godoc.org/github.com/dfkdream/godc?status.svg)](https://pkg.go.dev/github.com/dfkdream/godc)
+[![GoDoc](https://godoc.org/github.com/dfkdream/godc?status.svg)](https://pkg.go.dev/github.com/dfkdream/godc/v2)
 
 디시인사이드 비공식 API
 
@@ -12,7 +12,7 @@
 
 ## Document
 
-* [godoc](https://pkg.go.dev/github.com/dfkdream/godc)
+* [godoc](https://pkg.go.dev/github.com/dfkdream/godc/v2)
 
 ### Writer
 필드 이름 | 자료형 | 설명
